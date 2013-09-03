@@ -1,0 +1,13 @@
+{
+  "name": "arduinostuff",
+  "description": "Arduino stuff",
+  "author": "Various",
+  "dependencies": {
+    "requirejs": "latest",
+    "express": "latest",
+    "johnny-five": "latest"
+  },
+  "engines": {
+    "node": "0.10.4"
+  }
+}
