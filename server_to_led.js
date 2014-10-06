@@ -1,55 +1,60 @@
 var requirejs = require('requirejs');
 
 requirejs.config({
-    nodeRequire: require
+    nodeRequire : require
 });
 
-requirejs(
+requirejs([ 'http', 'express', 'johnny-five' ],
 
-    ['http', 'express', 'johnny-five'],
+function(http, express, five) {
 
-    function(http, express, five) {
+    var isOn = false;
 
-        var isOn = false;
+    var board = new five.Board();
 
-        var board = new five.Board();
-
-        board.on("ready", function() {  
-          led = new five.Led(13);
-          board.repl.inject({
-            led: led
-          });
-        })
-
-        var server = express();
-        
-        server.configure(function(){
-            server.set('port', 8888);        
-            server.use(express.bodyParser());
+    board.on("ready", function() {
+        led = new five.Led(13);
+        board.repl.inject({
+            led : led
         });
-        
-        server.get('/', function(req, res) {
-            res.writeHeader(200, {"Content-Type": "text/html"});
-            res.write('Nothing!\n');
-            res.end();
+    });
+
+    var server = express();
+
+    server.configure(function() {
+        server.set('port', 8888);
+        server.use(express.bodyParser());
+    });
+
+    server.get('/', function(req, res) {
+        res.writeHeader(200, {
+            "Content-Type" : "text/html"
         });
+        res.write('Nothing!\n');
+        res.end();
+    });
 
-        server.get('/toggle', function(req, res) {
+    server.get('/toggle', function(req, res) {
 
-            (isOn) ? led.off() : led.on();
+        if (isOn) {
+            led.off();
+        } else {
+            led.on();
+        }
 
-            isOn = !isOn;
+        isOn = !isOn;
 
-            console.log(led.value);
+        console.log(led.value);
 
-            res.writeHeader(200, {"Content-Type": "text/html"});
-            res.write('Nothing!\n');
-            res.end();
+        res.writeHeader(200, {
+            "Content-Type" : "text/html"
         });
+        res.write('Nothing!\n');
+        res.end();
+    });
 
-        http.createServer(server).listen(server.get('port'), function(){
-            console.log('Express server listening on port ' + server.get('port'));
-        }); 
-        
-    }
-);
+    http.createServer(server).listen(server.get('port'), function() {
+        console.log('Express server listening on port ' + server.get('port'));
+    });
+
+});
